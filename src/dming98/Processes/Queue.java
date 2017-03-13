@@ -1,52 +1,54 @@
 package dming98.Processes;
 
-public class Queue {
+import java.util.LinkedList;
+
+public class Queue  {
 	int maxSize;
 	int currentSize;
-	Process[] elements;
+	LinkedList<Process> elements = new LinkedList<Process>();
 
 	public Queue() {
 		this.maxSize = 50;
-		elements = new Process[50];
 		currentSize = 0;
 	}
 
 	public Queue(int maxSize) {
 		this.maxSize = maxSize;
-		elements = new Process[maxSize];
 		currentSize = 0;
 	}
 
 	public void priorityEnqueue(Process newProcess) {
 		if(isEmpty()){
-			elements[0]=newProcess;
-		} else if (!isFull()) {
-			for (int i = 0; i < currentSize; i++) {
-				if (newProcess.getBurstTime() < elements[i].getBurstTime()) {
-					for (int j = currentSize - 1; j > i; j--) {
-						elements[j] = elements[j - 1];
-					}
-					elements[i] = newProcess;
-					break;
-				}
-			}
+			elements.add(newProcess);
 			currentSize++;
+		} else if (!isFull()) {
+			boolean changed = false;
+			for (int i = 0; i < currentSize; i++) {
+				Process current = elements.get(i);
+				if ((newProcess.getBurstTime() < current.getBurstTime()) && !changed ){
+					elements.add(i, newProcess);
+					changed=true;
+					currentSize++;
+				}  
+			}
+			if(!changed){
+				elements.add(currentSize, newProcess);
+				changed=true;
+				currentSize++;
+			}
 		} else
 			throw new IndexOutOfBoundsException("The queue is full.");
 	}
 
 	public void enqueue(Process newProcess) {
 		if (!isFull()) {
-			elements[currentSize] = newProcess;
+			elements.add(newProcess);
 			currentSize++;
 		}
 	}
 
 	public Process dequeue() {
-		Process top = elements[0];
-		for(int i = 1;i<currentSize;i++){
-			elements[i-1]=elements[i];
-		}
+		Process top = elements.remove();
 		currentSize--;
 		return top;
 	}
@@ -64,8 +66,11 @@ public class Queue {
 	}
 	
 	public void printQueue(){
-		for(int i = 0; i<currentSize;i++){
-			System.out.println(elements[i].getID() + "\t" + elements[i].getBurstTime());
+		int i=0;
+		while(i<currentSize){
+			Process current = elements.get(i);
+			System.out.printf("%d\t%f\n",current.getID(),current.getBurstTime());
+			i++;
 		}
 	}
 }

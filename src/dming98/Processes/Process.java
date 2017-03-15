@@ -3,6 +3,7 @@ package dming98.Processes;
 public class Process{
 	private	int ID;
 	private double burstTime;
+	private double burstRemain;
 	private double waitTime;
 	private double endTime;
 	
@@ -11,11 +12,17 @@ public class Process{
 		this.burstTime=0;
 		this.endTime=0;
 	}
-	
+	/**
+	 * Getter for the process ID.
+	 * 
+	 * @param ID the ID to set
+	 * @param burstTime the burstTime to set
+	 */
 	public Process(int ID, double burstTime){
 		this.ID=ID;
 		this.burstTime=burstTime;
 		this.endTime=0;
+		this.burstRemain=burstTime;
 	}
 
 	/**
@@ -53,7 +60,23 @@ public class Process{
 	public void setBurstTime(double burstTime) {
 		this.burstTime = burstTime;
 	}
+	/**
+	 * Getter for the process burst remaining.
+	 * 
+	 * @return the burst time remaining
+	 */
+	public double getBurstRemain() {
+		return burstRemain;
+	}
 
+	/**
+	 * Setter for the process burst remaining.
+	 * 
+	 * @param burstTime the burstRemain to set
+	 */
+	public void setBurstRemain(double burstRemain) {
+		this.burstRemain = burstRemain;
+	}
 	/**
 	 * Getter for the process wait time.
 	 * 

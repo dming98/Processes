@@ -73,9 +73,10 @@ public class Queue {
 
 	public void printQueue() {
 		int i = 0;
+		System.out.printf("ID\tBurst Time\n");
 		while (i < currentSize) {
 			Process current = elements.get(i);
-			System.out.printf("%d\t%f\t%f\t%f\n", current.getID(), current.getBurstTime(), current.getWaitTime(), current.getEndTime());
+			System.out.printf("%d\t%f\n", current.getID(), current.getBurstTime());
 			i++;
 		}
 	}

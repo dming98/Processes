@@ -12,6 +12,7 @@ public class OSSimulator {
 		fileName = console.next();
 		Queue elements = queueMaker(fileName);
 		elements.printQueue();
+		calculateTime(elements);
 	}
 	
 	public static Queue queueMaker(String fileName) throws FileNotFoundException{
@@ -46,5 +47,26 @@ public class OSSimulator {
 		} else
 			throw new IllegalArgumentException("Invalid type choice.");
 		return elements;
+	}
+	
+	public static void calculateTime(Queue elements){
+		Process current;
+		int clock=0;
+		while(!elements.isEmpty()){
+			current=elements.dequeue();
+			if(1000*current.getBurstTime()<=100){
+				current.setWaitTime(current.getWaitTime()+(clock-current.getEndTime()));
+				clock=clock + (int) (1000*current.getBurstTime());
+				current.setEndTime(clock);
+				current.setBurstTime(0);
+				System.out.printf("%d\t%f\t%f\n", current.getID(), current.getWaitTime(), current.getEndTime());
+			} else {
+				current.setWaitTime(current.getWaitTime()+(clock-current.getEndTime()));
+				clock=clock + 100;
+				current.setEndTime(clock);
+				current.setBurstTime(current.getBurstTime()-.1);
+				elements.enqueue(current);
+			}
+		}
 	}
 }

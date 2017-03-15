@@ -2,7 +2,7 @@ package dming98.Processes;
 
 import java.util.LinkedList;
 
-public class Queue  {
+public class Queue {
 	int maxSize;
 	int currentSize;
 	LinkedList<Process> elements = new LinkedList<Process>();
@@ -13,27 +13,33 @@ public class Queue  {
 	}
 
 	public Queue(int maxSize) {
-		this.maxSize = maxSize;
-		currentSize = 0;
+		if (maxSize <= 50) {
+			this.maxSize = maxSize;
+			currentSize = 0;
+		} else
+			throw new IllegalArgumentException("The max size cannot be greater than 50.");
 	}
 
+	public int getCurrentSize(){
+		return currentSize;
+	}
 	public void priorityEnqueue(Process newProcess) {
-		if(isEmpty()){
+		if (isEmpty()) {
 			elements.add(newProcess);
 			currentSize++;
 		} else if (!isFull()) {
 			boolean changed = false;
 			for (int i = 0; i < currentSize; i++) {
 				Process current = elements.get(i);
-				if ((newProcess.getBurstTime() < current.getBurstTime()) && !changed ){
+				if ((newProcess.getBurstTime() < current.getBurstTime()) && !changed) {
 					elements.add(i, newProcess);
-					changed=true;
+					changed = true;
 					currentSize++;
-				}  
+				}
 			}
-			if(!changed){
+			if (!changed) {
 				elements.add(currentSize, newProcess);
-				changed=true;
+				changed = true;
 				currentSize++;
 			}
 		} else
@@ -64,12 +70,12 @@ public class Queue  {
 			return true;
 		return false;
 	}
-	
-	public void printQueue(){
-		int i=0;
-		while(i<currentSize){
+
+	public void printQueue() {
+		int i = 0;
+		while (i < currentSize) {
 			Process current = elements.get(i);
-			System.out.printf("%d\t%f\n",current.getID(),current.getBurstTime());
+			System.out.printf("%d\t%f\t%f\t%f\n", current.getID(), current.getBurstTime(), current.getWaitTime(), current.getEndTime());
 			i++;
 		}
 	}

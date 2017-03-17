@@ -10,7 +10,7 @@ public class OSSimulator {
 
 		System.out.print("Please input the name of the file:  ");
 		fileName = console.next();
-		System.out.print("\nType regular for FIFO, or type priority for priority enqueue:   ");
+		System.out.print("Type regular for FIFO, or type priority for priority enqueue:   ");
 		String type = console.next();
 		Queue elements = queueMaker(fileName, type);
 		elements.printQueue();
@@ -65,7 +65,7 @@ public class OSSimulator {
 					System.out.printf("%d\t%f\t%f\n", current.getID(), current.getWaitTime(), current.getEndTime());
 				} else {
 					current.setWaitTime(current.getWaitTime()+(clock-current.getEndTime()));
-					clock=clock + 100;
+					clock+= 100;
 					current.setEndTime(clock);
 					current.setBurstRemain(current.getBurstRemain()-.1);
 					elements.enqueue(current);
@@ -83,7 +83,7 @@ public class OSSimulator {
 					System.out.printf("%d\t%f\t%f\n", current.getID(), current.getWaitTime(), current.getEndTime());
 				} else {
 					current.setWaitTime(current.getWaitTime()+(clock-current.getEndTime()));
-					clock=clock + 100;
+					clock+= 100;
 					current.setEndTime(clock);
 					current.setBurstRemain(current.getBurstRemain()-.1);
 					elements.priorityEnqueue(current);

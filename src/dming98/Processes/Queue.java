@@ -1,28 +1,53 @@
 package dming98.Processes;
 
-import java.util.LinkedList;
-
 public class Queue {
 	int maxSize;
 	int currentSize;
+	Node<Process> head, tail;
 
-	public class Node {
-		Process item;
-		Node next;
+	/**
+	 * Inner Node class handling the links of our Process queue.
+	 */
+	public class Node<Process> {
+		protected Node<Process> next;
+		protected Process item;
 
-		public Node(Process value) {
-			item = value;
+		/**
+		 * Constructor for default Node.
+		 */
+		public Node() {
+			this.item = null;
+			this.next = null;
 		}
 
-		public Node(Process value, Node next) {
-			item = value;
+		/**
+		 * Constructor for itemized Node.
+		 * 
+		 * @param item
+		 *            the Process to set
+		 */
+		public Node(Process item) {
+			this.item = item;
+			this.next = null;
+		}
+
+		/**
+		 * Constructor for itemized and linked Node.
+		 * 
+		 * @param item
+		 *            the Process to set
+		 * @param next
+		 *            Node to point to
+		 */
+		public Node(Process item, Node<Process> next) {
+			this.item = item;
 			this.next = next;
 		}
 	}
 
-	private Node head;
-	private Node tail;
-
+	/**
+	 * Constructor for default Queue.
+	 */
 	public Queue() {
 		this.maxSize = 50;
 		currentSize = 0;
@@ -30,6 +55,14 @@ public class Queue {
 		tail = null;
 	}
 
+	/**
+	 * Constructor for sized Queue.
+	 * 
+	 * @param maxSize
+	 *            the max size to be set
+	 * @throws IllegalArgumentException
+	 *             for maxSize > 50
+	 */
 	public Queue(int maxSize) {
 		if (maxSize <= 50) {
 			this.maxSize = maxSize;
@@ -40,50 +73,69 @@ public class Queue {
 			throw new IllegalArgumentException("The max size cannot be greater than 50.");
 	}
 
+	/**
+	 * Getter for the current size.
+	 * 
+	 * @return the current size
+	 */
 	public int getCurrentSize() {
 		return currentSize;
 	}
 
+	/**
+	 * Enqueue a process into the queue based on ascending burst time.
+	 * 
+	 * @param newProcess
+	 *            the process to be enqueued
+	 */
 	public void priorityEnqueue(Process newProcess) {
-		Node input = new Node(newProcess);
 		if (isEmpty()) {
-			head = input;
-			tail = input;
+			head = new Node<Process>(newProcess);
+			tail = head;
 			currentSize++;
 		} else if (!isFull()) {
-			if (head.item.getBurstTime() > input.item.getBurstTime()) {
-				input.next = head;
+			if (head.item.getBurstTime() > newProcess.getBurstTime()) {
+				Node<Process> input = new Node<Process>(newProcess, head);
 				head = input;
 				currentSize++;
-			} else if (tail.item.getBurstTime() < input.item.getBurstTime()) {
+			} else if (tail.item.getBurstTime() < newProcess.getBurstTime()) {
+				Node<Process> input = new Node<Process>(newProcess);
 				tail.next = input;
 				tail = input;
 				currentSize++;
 			} else {
-				Node curr = head.next;
-				Node prev = head;
-				while (curr.next != null) {
-					if (curr.item.getBurstTime() > input.item.getBurstTime()) {
-						input.next = curr;
+				Node<Process> input = new Node<Process>(newProcess);
+				Node<Process> prev = head;
+				Node<Process> curr = head.next;
+				while (curr != null) {
+					if (curr.item.getBurstTime() > newProcess.getBurstTime()) {
 						prev.next = input;
-						currentSize++;
+						input.next = curr;
+						break;
 					}
+					prev = curr;
 					curr = curr.next;
-					prev = prev.next;
-
 				}
+
+				currentSize++;
 			}
 		} else
 			throw new IndexOutOfBoundsException("The queue is full.");
 	}
 
+	/**
+	 * Enqueue a process to the tail.
+	 * 
+	 * @param newProcess
+	 *            the process to be enqueued
+	 */
 	public void enqueue(Process newProcess) {
-		Node input = new Node(newProcess);
 		if (isEmpty()) {
-			head = input;
-			tail = input;
+			head = new Node<Process>(newProcess);
+			tail = head;
 			currentSize++;
 		} else if (!isFull()) {
+			Node<Process> input = new Node<Process>(newProcess);
 			tail.next = input;
 			tail = input;
 			currentSize++;
@@ -91,39 +143,45 @@ public class Queue {
 			throw new IndexOutOfBoundsException("The queue is full.");
 	}
 
+	/**
+	 * Dequeues a process from the head of the queue.
+	 * 
+	 * @return the process at the head of the queue
+	 */
 	public Process dequeue() {
-		Process begin = null;
-		if (!isEmpty()) {
-			begin = head.item;
-			head = head.next;
-			currentSize--;
-			if (currentSize == 0) {
-				tail = null;
-			}
-		} else
-			throw new IndexOutOfBoundsException("The queue is empty.");
-		return begin;
+		Process top = head.item;
+		head = head.next;
+		currentSize--;
+		return top;
 	}
 
+	/**
+	 * Checks to see if queue is full.
+	 * 
+	 * @return true if queue is full
+	 */
 	public boolean isFull() {
-		if (currentSize == maxSize)
-			return true;
-		return false;
+		return (currentSize == maxSize);
 	}
 
+	/**
+	 * Checks to see if queue is empty.
+	 * 
+	 * @return true if queue is empty
+	 */
 	public boolean isEmpty() {
-		if (currentSize == 0)
-			return true;
-		return false;
+		return (currentSize == 0);
 	}
 
+	/**
+	 * Prints out the contents of the queue.
+	 */
 	public void printQueue() {
 		System.out.printf("ID\tBurst Time\n");
-		Node curr = head;
-		while (curr.next != null) {
-			Process current = curr.item;
-			System.out.printf("%d\t%f\n", current.getID(), current.getBurstTime());
-			curr = curr.next;
+		Node<Process> current = head;
+		while (current != null) {
+			System.out.printf("%d\t%f\n", current.item.getID(), current.item.getBurstTime());
+			current = current.next;
 		}
 	}
 }
